@@ -1,0 +1,111 @@
+@use '../../../../styles/tokens' as t;
+
+.auth {
+  display: flex;
+  min-height: 100vh;
+  background: t.$page-bg;
+}
+
+.auth__brand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 38%;
+  min-width: 380px;
+  padding: 2.5rem;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(91, 79, 229, 0.25), transparent 55%),
+    radial-gradient(circle at 85% 90%, rgba(91, 79, 229, 0.18), transparent 50%),
+    t.$sidebar-bg;
+  color: #fff;
+  overflow: hidden;
+}
+
+.auth__brand-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.auth__brand-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: t.$accent;
+  color: #fff;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.auth__brand-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.auth__pitch-title {
+  margin: 0 0 1rem;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.auth__pitch-desc {
+  margin: 0 0 1.75rem;
+  max-width: 30rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.auth__highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.auth__highlights li {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.auth__highlights-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: t.$accent;
+  flex-shrink: 0;
+}
+
+.auth__copyright {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.auth__panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+}
+
+@media (max-width: 991.98px) {
+  .auth__brand {
+    display: none;
+  }
+
+  .auth__panel {
+    padding: 2rem 1.5rem;
+  }
+}

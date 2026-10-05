@@ -1,0 +1,181 @@
+<div class="page-header card">
+  <span class="page-header__icon"><i class="bi bi-calendar-check-fill"></i></span>
+  <div>
+    <h2 class="page-header__title">Abonnements</h2>
+    <p class="page-header__desc">
+      Enregistrez les périodes payées par les entreprises. À l'échéance, leur gestionnaire ne peut plus se connecter.
+    </p>
+  </div>
+</div>
+
+<div class="alert alert--error" *ngIf="errorMessage()">{{ errorMessage() }}</div>
+
+<div class="state-cards">
+  <button
+    type="button"
+    class="card state-card"
+    *ngFor="let state of states"
+    [class]="'card state-card state-card--' + state"
+    [class.state-card--selected]="stateFilter() === state"
+    (click)="filterBy(state)"
+  >
+    <span class="state-card__value">{{ counts()[state] }}</span>
+    <span class="state-card__label">{{ stateLabels[state] }}</span>
+  </button>
+</div>
+
+<div class="card toolbar-card">
+  <div class="table-card__toolbar">
+    <div class="search">
+      <i class="bi bi-search"></i>
+      <input type="text" placeholder="Rechercher une entreprise..." [(ngModel)]="search" (keyup.enter)="load(1)" />
+    </div>
+    <span class="text-muted filter-label" *ngIf="stateFilter() as state">
+      Filtre : {{ stateLabels[state] }}
+      <button type="button" class="link-btn" (click)="filterBy(state)">Retirer</button>
+    </span>
+  </div>
+</div>
+
+<div class="state-message text-center text-muted" *ngIf="isLoading()">Chargement...</div>
+<div class="state-message text-center text-muted" *ngIf="!isLoading() && items().length === 0">
+  Aucune entreprise trouvée.
+</div>
+
+<div class="card table-card" *ngIf="!isLoading() && items().length > 0">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Entreprise</th>
+        <th>État</th>
+        <th>Formule</th>
+        <th>Échéance</th>
+        <th>Restant</th>
+        <th class="text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items()">
+        <td>
+          {{ item.tenant_name }}
+          <span class="badge badge--muted" *ngIf="!item.tenant_active">Désactivée</span>
+        </td>
+        <td><span [class]="'sub-badge sub-badge--' + item.state">{{ stateLabels[item.state] }}</span></td>
+        <td>{{ item.plan || '—' }}</td>
+        <td>{{ formatDate(item.ends_at) }}</td>
+        <td [class.text-danger]="(item.days_left ?? 0) < 0">{{ daysLabel(item) }}</td>
+        <td class="text-right">
+          <button type="button" class="btn btn--ghost btn--sm" (click)="openHistory(item)">
+            <i class="bi bi-clock-history"></i> Gérer
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card pagination-card" *ngIf="lastPage() > 1">
+  <div class="pagination">
+    <button type="button" class="icon-btn" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <span class="pagination__label">Page {{ currentPage() }} / {{ lastPage() }} ({{ total() }} entreprises)</span>
+    <button type="button" class="icon-btn" [disabled]="currentPage() === lastPage()" (click)="goToPage(currentPage() + 1)">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Historique et saisie d'un abonnement -->
+<div class="modal-backdrop" *ngIf="selected()" (click)="closeHistory()"></div>
+<div class="modal modal--wide" *ngIf="selected() as tenant">
+  <div class="modal__header">
+    <h3>Abonnements · {{ tenant.tenant_name }}</h3>
+    <button type="button" class="icon-btn" (click)="closeHistory()"><i class="bi bi-x-lg"></i></button>
+  </div>
+
+  <div class="status-banner" *ngIf="selectedStatus() as status" [class]="'status-banner status-banner--' + status.state">
+    <strong>{{ stateLabels[status.state] }}</strong>
+    <span *ngIf="status.ends_at">
+      · couvert jusqu'au {{ formatDate(status.ends_at) }} ({{ daysLabel(status) }})
+    </span>
+  </div>
+
+  <ng-container *ngIf="!isFormOpen()">
+    <div class="history-toolbar">
+      <span class="text-muted">{{ history().length }} période(s)</span>
+      <button type="button" class="btn btn--primary btn--sm" (click)="openCreateForm()">
+        <i class="bi bi-plus-lg"></i> Enregistrer un paiement
+      </button>
+    </div>
+
+    <div class="state-message text-center text-muted" *ngIf="isHistoryLoading()">Chargement...</div>
+
+    <table class="table" *ngIf="!isHistoryLoading() && history().length > 0">
+      <thead>
+        <tr>
+          <th>Formule</th>
+          <th>Période</th>
+          <th>Montant</th>
+          <th class="text-right"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let sub of history()">
+          <td>
+            {{ sub.plan }}
+            <small class="text-muted d-block" *ngIf="sub.notes">{{ sub.notes }}</small>
+          </td>
+          <td>{{ formatDate(sub.starts_at) }} → {{ formatDate(sub.ends_at) }}</td>
+          <td>{{ formatAmount(sub.amount, sub.currency) }}</td>
+          <td class="text-right">
+            <div class="table-actions">
+              <button type="button" class="icon-btn" title="Modifier" (click)="openEditForm(sub)"><i class="bi bi-pencil"></i></button>
+              <button type="button" class="icon-btn icon-btn--danger" title="Supprimer" (click)="askDelete(sub)"><i class="bi bi-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-container>
+
+  <form *ngIf="isFormOpen()" (ngSubmit)="submitForm()">
+    <div class="alert alert--error" *ngIf="formError()">{{ formError() }}</div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label class="field__label" for="plan">Formule *</label>
+        <input id="plan" type="text" class="field__input" list="plans" [(ngModel)]="form.plan" name="plan" required />
+        <datalist id="plans">
+          <option value="Essai"></option>
+          <option value="Mensuel"></option>
+          <option value="Trimestriel"></option>
+          <option value="Annuel"></option>
+        </datalist>
+      </div>
+      <div class="field">
+        <label class="field__label" for="amount">Montant payé (FCFA) *</label>
+        <input id="amount" type="number" min="0" class="field__input" [(ngModel)]="form.amount" name="amount" required />
+      </div>
+      <div class="field">
+        <label class="field__label" for="starts_at">Début *</label>
+        <input id="starts_at" type="date" class="field__input" [(ngModel)]="form.starts_at" name="starts_at" required />
+      </div>
+      <div class="field">
+        <label class="field__label" for="ends_at">Fin (incluse) *</label>
+        <input id="ends_at" type="date" class="field__input" [(ngModel)]="form.ends_at" name="ends_at" required />
+      </div>
+      <div class="field field--full">
+        <label class="field__label" for="notes">Notes</label>
+        <input id="notes" type="text" class="field__input" placeholder="Référence Wave, Orange Money..." [(ngModel)]="form.notes" name="notes" />
+      </div>
+    </div>
+
+    <div class="modal__actions">
+      <button type="button" class="btn btn--ghost" (click)="closeForm()">Retour</button>
+      <button type="submit" class="btn btn--primary" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Enregistrement...' : 'Enregistrer' }}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,54 @@
+<div class="card welcome">
+  <div>
+    <h2 class="welcome__title">Bonjour {{ authService.currentUser()?.first_name || '' }} <i class="bi bi-emoji-smile"></i></h2>
+    <p class="welcome__desc">Voici l'état des entreprises et de leurs abonnements.</p>
+    <div class="welcome__actions">
+      <a routerLink="/tenants" class="btn btn--primary"><i class="bi bi-buildings"></i> Entreprises</a>
+      <a routerLink="/subscriptions" class="btn btn--ghost"><i class="bi bi-calendar-check"></i> Abonnements</a>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert--error" *ngIf="errorMessage()">{{ errorMessage() }}</div>
+
+<div class="kpi-grid">
+  <div class="card kpi" *ngFor="let kpi of kpis()">
+    <p class="kpi__label">{{ kpi.label }}</p>
+    <p class="kpi__value">{{ kpi.value }}</p>
+    <p class="kpi__trend" [class]="'kpi__trend kpi__trend--' + kpi.tone">{{ kpi.hint }}</p>
+  </div>
+</div>
+
+<div class="card transactions">
+  <div class="transactions__header">
+    <h3 class="transactions__title">À relancer</h3>
+    <a routerLink="/subscriptions" class="transactions__link">Voir tout</a>
+  </div>
+
+  <p class="text-muted empty" *ngIf="data() && data()!.attention.length === 0">
+    Aucune entreprise à relancer : tous les abonnements sont à jour.
+  </p>
+
+  <div class="transactions__table-wrap" *ngIf="data()?.attention?.length">
+    <table class="transactions__table">
+      <thead>
+        <tr>
+          <th>Entreprise</th>
+          <th>État</th>
+          <th>Échéance</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of data()!.attention">
+          <td>{{ item.tenant_name }}</td>
+          <td>
+            <span class="badge" [class]="'badge badge--' + (item.state === 'expiring' ? 'en-cours' : 'danger')">
+              {{ stateLabels[item.state] }}
+            </span>
+          </td>
+          <td class="text-muted">{{ daysLabel(item) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

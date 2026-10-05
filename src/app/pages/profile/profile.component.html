@@ -1,0 +1,107 @@
+<div class="profile-layout">
+  <div class="card profile-summary">
+    <div class="profile-avatar">
+      {{ user()?.first_name?.charAt(0) || '' }}{{ user()?.last_name?.charAt(0) || '' }}
+    </div>
+    <h2 class="profile-name">{{ user()?.full_name }}</h2>
+    <p class="profile-role">{{ roleLabels[user()?.role ?? ''] || '' }}</p>
+
+    <div class="profile-info">
+      <div class="info-item">
+        <span class="info-item__label"><i class="bi bi-envelope"></i> Email</span>
+        <span class="info-item__value">{{ user()?.email || '—' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-item__label"><i class="bi bi-telephone"></i> Téléphone</span>
+        <span class="info-item__value">{{ user()?.phone_display || user()?.phone || '—' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-item__label"><i class="bi bi-geo-alt"></i> Adresse</span>
+        <span class="info-item__value">{{ user()?.address || '—' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card profile-form">
+    <h3 class="section-title">Modifier mes informations</h3>
+
+    <div class="alert alert--error" *ngIf="errorMessage()">{{ errorMessage() }}</div>
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="field">
+        <label class="field__label" for="phoneTwo">Téléphone secondaire</label>
+        <input
+          id="phoneTwo"
+          type="text"
+          name="phoneTwo"
+          class="field__input"
+          placeholder="77 123 45 67"
+          [(ngModel)]="phoneTwo"
+        />
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="address">Adresse</label>
+        <input
+          id="address"
+          type="text"
+          name="address"
+          class="field__input"
+          placeholder="Adresse"
+          [(ngModel)]="address"
+        />
+      </div>
+
+      <div class="field-divider">
+        <span>Changer le mot de passe (optionnel)</span>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="currentPassword">Mot de passe actuel</label>
+        <input
+          id="currentPassword"
+          type="password"
+          name="currentPassword"
+          class="field__input"
+          placeholder="••••••••"
+          [(ngModel)]="currentPassword"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <div class="field-group">
+        <div class="field">
+          <label class="field__label" for="password">Nouveau mot de passe</label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            class="field__input"
+            placeholder="••••••••"
+            [(ngModel)]="password"
+            autocomplete="new-password"
+            minlength="8"
+          />
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="passwordConfirmation">Confirmer le mot de passe</label>
+          <input
+            id="passwordConfirmation"
+            type="password"
+            name="passwordConfirmation"
+            class="field__input"
+            placeholder="••••••••"
+            [(ngModel)]="passwordConfirmation"
+            autocomplete="new-password"
+            minlength="8"
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+      </button>
+    </form>
+  </div>
+</div>

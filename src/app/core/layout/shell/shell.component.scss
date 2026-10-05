@@ -1,0 +1,25 @@
+@use '../../../../styles/tokens' as t;
+
+.shell {
+  display: flex;
+  min-height: 100vh;
+  background: t.$page-bg;
+}
+
+.shell__main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.shell__content {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+@media (max-width: 575.98px) {
+  .shell__content {
+    padding: 1rem;
+  }
+}

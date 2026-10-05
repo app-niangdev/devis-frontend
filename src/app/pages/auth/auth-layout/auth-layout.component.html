@@ -1,0 +1,28 @@
+<div class="auth">
+  <aside class="auth__brand">
+    <div class="auth__brand-header">
+      <span class="auth__brand-logo">L</span>
+      <span class="auth__brand-name">LuminaSaaS</span>
+    </div>
+
+    <div class="auth__pitch">
+      <h1 class="auth__pitch-title">Pilotez votre<br />activité avec clarté.</h1>
+      <p class="auth__pitch-desc">
+        Ventes, produits, catégories et utilisateurs réunis dans un espace unique, rapide et élégant.
+      </p>
+
+      <ul class="auth__highlights">
+        <li *ngFor="let item of highlights">
+          <span class="auth__highlights-dot"></span>
+          {{ item }}
+        </li>
+      </ul>
+    </div>
+
+    <p class="auth__copyright">© {{ year }} LuminaSaaS. Tous droits réservés.</p>
+  </aside>
+
+  <main class="auth__panel">
+    <router-outlet></router-outlet>
+  </main>
+</div>

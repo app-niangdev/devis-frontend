@@ -1,0 +1,145 @@
+@use '../../../styles/tokens' as t;
+
+.state-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 1rem 1.25rem;
+  border: 2px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+
+  &--selected {
+    border-color: t.$accent;
+  }
+
+  &--active .state-card__value {
+    color: t.$success;
+  }
+
+  &--expiring .state-card__value {
+    color: t.$warning;
+  }
+
+  &--expired .state-card__value,
+  &--none .state-card__value {
+    color: t.$danger;
+  }
+}
+
+.state-card__value {
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.state-card__label {
+  font-size: 0.82rem;
+  color: t.$text-secondary;
+}
+
+.filter-label {
+  font-size: 0.82rem;
+}
+
+.link-btn {
+  margin-left: 0.4rem;
+  border: none;
+  background: none;
+  color: t.$accent;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn--sm {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.text-danger {
+  color: t.$danger !important;
+}
+
+.d-block {
+  display: block;
+}
+
+.sub-badge {
+  display: inline-flex;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+
+  &--active {
+    background: rgba(22, 163, 74, 0.12);
+    color: t.$success;
+  }
+
+  &--expiring {
+    background: rgba(217, 119, 6, 0.12);
+    color: t.$warning;
+  }
+
+  &--expired,
+  &--none {
+    background: rgba(220, 38, 38, 0.08);
+    color: t.$danger;
+  }
+}
+
+.modal--wide {
+  width: min(720px, calc(100vw - 2rem));
+}
+
+.status-banner {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: t.$radius-md;
+  font-size: 0.85rem;
+
+  &--active {
+    background: rgba(22, 163, 74, 0.08);
+    color: t.$success;
+  }
+
+  &--expiring {
+    background: rgba(217, 119, 6, 0.08);
+    color: t.$warning;
+  }
+
+  &--expired,
+  &--none {
+    background: rgba(220, 38, 38, 0.06);
+    color: t.$danger;
+  }
+}
+
+.history-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 767.98px) {
+  .state-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.modal .table {
+  th,
+  td {
+    padding: 0.7rem 0.6rem;
+  }
+}
