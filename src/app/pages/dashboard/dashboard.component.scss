@@ -213,3 +213,63 @@
 a.btn {
   text-decoration: none;
 }
+
+.stats {
+  margin-top: 1.25rem;
+}
+
+.stats__search {
+  padding: 0.45rem 0.75rem;
+  border: 1px solid t.$border-color;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  min-width: 0;
+  width: 220px;
+  max-width: 50%;
+  background: t.$card-bg;
+  color: t.$text-primary;
+}
+
+.transactions__table {
+  .num {
+    text-align: right;
+  }
+
+  tfoot td {
+    border-top: 2px solid t.$border-color;
+    border-bottom: none;
+    font-weight: 700;
+  }
+
+  .badge {
+    margin-left: 0.4rem;
+  }
+}
+
+.stats__count {
+  display: block;
+  font-weight: 700;
+
+  &--accepted {
+    color: t.$success;
+  }
+
+  &--refused {
+    color: t.$danger;
+  }
+
+  &--pending {
+    color: t.$warning;
+  }
+}
+
+.stats__amount {
+  display: block;
+  font-size: 0.75rem;
+  color: t.$text-muted;
+}
+
+.stats__collected {
+  font-weight: 700;
+  color: t.$success;
+}

@@ -52,3 +52,64 @@
     </table>
   </div>
 </div>
+
+<div class="card transactions stats">
+  <div class="transactions__header">
+    <h3 class="transactions__title">Statistiques par entreprise</h3>
+    <input
+      type="search"
+      class="stats__search"
+      placeholder="Rechercher une entreprise"
+      [value]="tenantFilter()"
+      (input)="tenantFilter.set($any($event.target).value)"
+      *ngIf="data()?.tenant_stats?.length" />
+  </div>
+
+  <p class="text-muted empty" *ngIf="data() && filteredStats().length === 0">
+    Aucune entreprise à afficher.
+  </p>
+
+  <div class="transactions__table-wrap" *ngIf="filteredStats().length">
+    <table class="transactions__table">
+      <thead>
+        <tr>
+          <th>Entreprise</th>
+          <th class="num">Acceptés</th>
+          <th class="num">Refusés</th>
+          <th class="num" title="Brouillons et devis envoyés sans réponse">En attente</th>
+          <th class="num" title="Acomptes reçus sur les devis acceptés">Encaissé</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of filteredStats()">
+          <td>
+            {{ s.tenant_name }}
+            <span class="badge badge--danger" *ngIf="!s.tenant_active">Désactivée</span>
+          </td>
+          <td class="num">
+            <span class="stats__count stats__count--accepted">{{ s.accepted.count }}</span>
+            <span class="stats__amount">{{ money(s.accepted.total) }}</span>
+          </td>
+          <td class="num">
+            <span class="stats__count stats__count--refused">{{ s.refused.count }}</span>
+            <span class="stats__amount">{{ money(s.refused.total) }}</span>
+          </td>
+          <td class="num">
+            <span class="stats__count stats__count--pending">{{ s.pending.count }}</span>
+            <span class="stats__amount">{{ money(s.pending.total) }}</span>
+          </td>
+          <td class="num stats__collected">{{ money(s.collected) }}</td>
+        </tr>
+      </tbody>
+      <tfoot *ngIf="!tenantFilter()">
+        <tr>
+          <td>Total</td>
+          <td class="num">{{ statsTotal(acceptedCount) }}</td>
+          <td class="num">{{ statsTotal(refusedCount) }}</td>
+          <td class="num">{{ statsTotal(pendingCount) }}</td>
+          <td class="num stats__collected">{{ money(statsTotal(collected)) }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>

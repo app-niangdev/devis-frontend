@@ -1,8 +1,8 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
-import { AdminDashboard, AdminDashboardService } from '../../core/services/admin-dashboard.service';
+import { AdminDashboard, AdminDashboardService, TenantStats } from '../../core/services/admin-dashboard.service';
 import { SubscriptionStatus } from '../../core/models/auth.model';
 import { STATE_LABELS } from '../subscriptions/subscriptions.component';
 
@@ -27,6 +27,12 @@ export class DashboardComponent implements OnInit {
   protected readonly stateLabels = STATE_LABELS;
   protected readonly data = signal<AdminDashboard | null>(null);
   protected readonly kpis = signal<KpiCard[]>([]);
+  protected readonly tenantFilter = signal('');
+  protected readonly filteredStats = computed(() => {
+    const q = this.tenantFilter().trim().toLowerCase();
+    const stats = this.data()?.tenant_stats ?? [];
+    return q ? stats.filter((s) => s.tenant_name.toLowerCase().includes(q)) : stats;
+  });
   protected readonly errorMessage = signal<string | null>(null);
 
   ngOnInit(): void {
@@ -63,6 +69,20 @@ export class DashboardComponent implements OnInit {
       },
       error: () => this.errorMessage.set('Impossible de charger le tableau de bord.')
     });
+  }
+
+  protected readonly acceptedCount = (s: TenantStats) => s.accepted.count;
+  protected readonly refusedCount = (s: TenantStats) => s.refused.count;
+  protected readonly pendingCount = (s: TenantStats) => s.pending.count;
+  protected readonly collected = (s: TenantStats) => s.collected;
+
+  money(value: number): string {
+    return `${new Intl.NumberFormat('fr-FR').format(value)} FCFA`;
+  }
+
+  /** Somme d'une colonne du tableau des statistiques par entreprise. */
+  statsTotal(pick: (s: TenantStats) => number): number {
+    return (this.data()?.tenant_stats ?? []).reduce((sum, s) => sum + pick(s), 0);
   }
 
   daysLabel(item: SubscriptionStatus): string {
