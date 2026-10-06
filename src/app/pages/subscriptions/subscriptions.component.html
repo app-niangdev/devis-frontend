@@ -3,7 +3,7 @@
   <div>
     <h2 class="page-header__title">Abonnements</h2>
     <p class="page-header__desc">
-      Enregistrez les périodes payées par les entreprises. À l'échéance, leur gestionnaire ne peut plus se connecter.
+      Enregistrez les forfaits payés par les entreprises. À l'échéance, leur gestionnaire ne peut plus se connecter.
     </p>
   </div>
 </div>
@@ -144,27 +144,41 @@
 
     <div class="form-grid">
       <div class="field">
-        <label class="field__label" for="plan">Formule *</label>
-        <input id="plan" type="text" class="field__input" list="plans" [(ngModel)]="form.plan" name="plan" required />
-        <datalist id="plans">
-          <option value="Essai"></option>
-          <option value="Mensuel"></option>
-          <option value="Trimestriel"></option>
-          <option value="Annuel"></option>
-        </datalist>
-      </div>
-      <div class="field">
-        <label class="field__label" for="amount">Montant payé (FCFA) *</label>
-        <input id="amount" type="number" min="0" class="field__input" [(ngModel)]="form.amount" name="amount" required />
+        <label class="field__label" for="plan">Forfait {{ editingWithoutPlan() ? '' : '*' }}</label>
+        <select id="plan" class="field__input" [(ngModel)]="form.subscription_plan_id" name="subscription_plan_id">
+          <option [ngValue]="null" *ngIf="editingWithoutPlan()">Sans forfait (dates manuelles)</option>
+          <option [ngValue]="null" disabled *ngIf="!editingWithoutPlan()">Choisir un forfait</option>
+          <option *ngFor="let plan of selectablePlans()" [ngValue]="plan.id">
+            {{ plan.name }} · {{ durationLabel(plan.duration_months) }} · {{ formatAmount(plan.price, plan.currency) }}{{ plan.is_active ? '' : ' (désactivé)' }}
+          </option>
+        </select>
+        <small class="text-muted" *ngIf="selectablePlans().length === 0">
+          Aucun forfait actif : créez-en un dans « Forfaits ».
+        </small>
       </div>
       <div class="field">
         <label class="field__label" for="starts_at">Début *</label>
         <input id="starts_at" type="date" class="field__input" [(ngModel)]="form.starts_at" name="starts_at" required />
       </div>
-      <div class="field">
-        <label class="field__label" for="ends_at">Fin (incluse) *</label>
-        <input id="ends_at" type="date" class="field__input" [(ngModel)]="form.ends_at" name="ends_at" required />
-      </div>
+
+      <ng-container *ngIf="selectedPlan() as plan; else manualEnd">
+        <div class="field">
+          <span class="field__label">Fin (incluse)</span>
+          <span class="field__input field__input--readonly">{{ formatDate(computedEnd()) }}</span>
+        </div>
+        <div class="field">
+          <span class="field__label">Montant</span>
+          <span class="field__input field__input--readonly">
+            {{ formatAmount(plan.price, plan.currency) }}
+          </span>
+        </div>
+      </ng-container>
+      <ng-template #manualEnd>
+        <div class="field" *ngIf="editingWithoutPlan()">
+          <label class="field__label" for="ends_at">Fin (incluse) *</label>
+          <input id="ends_at" type="date" class="field__input" [(ngModel)]="form.ends_at" name="ends_at" required />
+        </div>
+      </ng-template>
       <div class="field field--full">
         <label class="field__label" for="notes">Notes</label>
         <input id="notes" type="text" class="field__input" placeholder="Référence Wave, Orange Money..." [(ngModel)]="form.notes" name="notes" />

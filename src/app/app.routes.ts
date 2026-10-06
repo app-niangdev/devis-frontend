@@ -71,6 +71,13 @@ export const routes: Routes = [
         data: { title: 'Abonnements' }
       },
       {
+        path: 'subscription-plans',
+        loadComponent: () =>
+          import('./pages/subscription-plans/subscription-plans.component').then((m) => m.SubscriptionPlansComponent),
+        canActivate: [adminGuard],
+        data: { title: 'Forfaits' }
+      },
+      {
         path: 'profile',
         loadComponent: () =>
           import('./pages/profile/profile.component').then((m) => m.ProfileComponent),

@@ -13,8 +13,8 @@ export class AuthLayoutComponent {
   protected readonly year = new Date().getFullYear();
 
   protected readonly highlights = [
-    'Tableaux de bord en temps réel',
-    'Gestion fine des accès',
-    'Rapports exportables'
+    'Devis PDF aux couleurs de chaque entreprise',
+    'Suivi des acomptes : Wave, Orange Money, espèces',
+    'Entreprises et abonnements gérés au même endroit'
   ];
 }

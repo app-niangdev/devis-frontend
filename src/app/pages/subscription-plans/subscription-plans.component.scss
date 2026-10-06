@@ -1,0 +1,10 @@
+@use '../../../styles/tokens' as t;
+
+.row--inactive td {
+  color: t.$text-muted;
+}
+
+.locked-hint {
+  margin: -0.25rem 0 0;
+  font-size: 0.8rem;
+}

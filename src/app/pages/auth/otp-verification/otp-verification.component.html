@@ -1,8 +1,8 @@
 <div class="auth-form">
-  <p class="auth-form__eyebrow">Sécurité</p>
-  <h2 class="auth-form__title">Vérification en deux étapes</h2>
+  <p class="auth-form__eyebrow">Récupération</p>
+  <h2 class="auth-form__title">Code de vérification</h2>
   <p class="auth-form__desc">
-    Saisissez le code à 6 chiffres envoyé à <strong>{{ email }}</strong>.
+    Saisissez le code à 6 chiffres envoyé par e-mail à <strong>{{ email }}</strong>.
   </p>
 
   <div class="alert alert--error" *ngIf="errorMessage()">{{ errorMessage() }}</div>
@@ -25,7 +25,7 @@
 
     <div class="notice">
       <i class="bi bi-shield-check"></i>
-      <span>Ne partagez jamais ce code. Il expire dans quelques minutes.</span>
+      <span>Ne partagez jamais ce code. Il expire au bout de 15 minutes.</span>
     </div>
 
     <button type="submit" class="btn-primary" [disabled]="!isComplete()">Vérifier le code</button>

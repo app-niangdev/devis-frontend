@@ -2,7 +2,7 @@
 
 .welcome {
   margin-bottom: 1.25rem;
-  background: linear-gradient(135deg, #f4f3ff 0%, t.$card-bg 60%);
+  background: linear-gradient(135deg, t.$accent-soft 0%, t.$card-bg 60%);
 }
 
 .welcome__title {
@@ -29,7 +29,7 @@
   align-items: center;
   gap: 0.45rem;
   padding: 0.55rem 1rem;
-  border-radius: 8px;
+  border-radius: t.$radius-sm;
   font-size: 0.85rem;
   font-weight: 600;
   border: 1px solid transparent;
@@ -37,7 +37,7 @@
 
   &--primary {
     background: t.$accent;
-    color: #fff;
+    color: t.$text-inverse;
 
     &:hover {
       background: t.$accent-hover;
@@ -154,17 +154,17 @@
   display: inline-flex;
   align-items: center;
   padding: 0.2rem 0.6rem;
-  border-radius: 999px;
+  border-radius: t.$radius-pill;
   font-size: 0.72rem;
   font-weight: 700;
 
   &--complete {
-    background: rgba(22, 163, 74, 0.12);
+    background: rgba(t.$success, 0.12);
     color: t.$success;
   }
 
   &--en-cours {
-    background: rgba(217, 119, 6, 0.12);
+    background: rgba(t.$warning, 0.12);
     color: t.$warning;
   }
 }
@@ -194,14 +194,14 @@
   margin-bottom: 1rem;
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  background: rgba(220, 38, 38, 0.08);
-  color: #dc2626;
+  background: rgba(t.$danger, 0.08);
+  color: t.$danger;
   font-size: 0.85rem;
 }
 
 .badge--danger {
-  background: rgba(220, 38, 38, 0.08);
-  color: #dc2626;
+  background: rgba(t.$danger, 0.08);
+  color: t.$danger;
 }
 
 .empty {
@@ -221,7 +221,7 @@ a.btn {
 .stats__search {
   padding: 0.45rem 0.75rem;
   border: 1px solid t.$border-color;
-  border-radius: 8px;
+  border-radius: t.$radius-sm;
   font-size: 0.82rem;
   min-width: 0;
   width: 220px;

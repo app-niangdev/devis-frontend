@@ -30,6 +30,10 @@
     .sidebar__link {
       justify-content: center;
     }
+
+    .sidebar__brand-symbol {
+      display: block;
+    }
   }
 }
 
@@ -41,23 +45,22 @@
   white-space: nowrap;
 }
 
-.sidebar__brand-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
+// Le logo (texte « Devis » anthracite) est posé sur une pastille blanche pour rester lisible sur la sidebar sombre
+.sidebar__brand-logo {
+  display: block;
   height: 34px;
-  border-radius: 10px;
-  background: t.$accent;
-  color: #fff;
-  font-size: 1rem;
-  flex-shrink: 0;
+  width: auto;
+  max-width: 100%;
+  padding: 0.25rem 0.6rem;
+  border-radius: t.$radius-sm;
+  background: t.$card-bg;
 }
 
-.sidebar__brand-name {
-  color: #fff;
-  font-weight: 700;
-  font-size: 1.05rem;
+.sidebar__brand-symbol {
+  display: none;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
 }
 
 .sidebar__nav {
@@ -74,7 +77,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.6rem 0.75rem;
-  border-radius: 8px;
+  border-radius: t.$radius-sm;
   color: t.$sidebar-text-muted;
   text-decoration: none;
   font-size: 0.9rem;
@@ -91,12 +94,12 @@
 
   &:hover {
     background: t.$sidebar-hover;
-    color: #fff;
+    color: t.$text-inverse;
   }
 
   &.is-active {
     background: t.$accent;
-    color: #fff;
+    color: t.$text-inverse;
   }
 }
 
@@ -119,20 +122,20 @@
   margin: 0 0 0.5rem;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #fff;
+  color: t.$text-inverse;
 }
 
 .sidebar__plan-bar {
   height: 5px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
+  border-radius: t.$radius-pill;
+  background: rgba(t.$text-inverse, 0.12);
   overflow: hidden;
 }
 
 .sidebar__plan-bar-fill {
   width: 65%;
   height: 100%;
-  border-radius: 999px;
+  border-radius: t.$radius-pill;
   background: t.$accent;
 }
 
@@ -141,7 +144,7 @@
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(15, 18, 32, 0.55);
+    background: rgba(t.$text-primary, 0.55);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;
@@ -159,7 +162,7 @@
     left: 0;
     width: t.$sidebar-width;
     transform: translateX(-100%);
-    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.25);
+    box-shadow: t.$shadow-drawer;
     transition: transform 0.25s ease;
     z-index: 31;
 
@@ -174,6 +177,10 @@
 
       .sidebar__link {
         justify-content: flex-start;
+      }
+
+      .sidebar__brand-symbol {
+        display: none;
       }
     }
 

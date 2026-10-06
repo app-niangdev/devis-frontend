@@ -23,7 +23,7 @@
   height: 4.5rem;
   border-radius: 50%;
   background: t.$accent;
-  color: #fff;
+  color: t.$text-inverse;
   font-size: 1.4rem;
   font-weight: 700;
   flex-shrink: 0;
@@ -128,7 +128,7 @@
 }
 
 .alert--error {
-  background: rgba(220, 38, 38, 0.08);
+  background: rgba(t.$danger, 0.08);
   color: t.$danger;
 }
 

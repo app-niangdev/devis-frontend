@@ -3,9 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SubscriptionService } from '../../core/services/subscription.service';
+import { SubscriptionPlanService } from '../../core/services/subscription-plan.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { SubscriptionState, SubscriptionStatus } from '../../core/models/auth.model';
-import { Subscription, SubscriptionOverviewItem, SubscriptionPayload } from '../../core/models/subscription.model';
+import {
+  Subscription,
+  SubscriptionOverviewItem,
+  SubscriptionPayload,
+  SubscriptionPlan
+} from '../../core/models/subscription.model';
 
 const PER_PAGE = 15;
 
@@ -17,8 +23,7 @@ export const STATE_LABELS: Record<SubscriptionState, string> = {
 };
 
 interface SubscriptionFormState {
-  plan: string;
-  amount: number | null;
+  subscription_plan_id: number | null;
   starts_at: string;
   ends_at: string;
   notes: string;
@@ -35,9 +40,19 @@ function addDays(iso: string, days: number): string {
   return isoDate(date);
 }
 
+/** Dernier jour couvert : début + N mois − 1 jour (même calcul que l'API, sans débordement de mois). */
+function planEnd(startIso: string, months: number): string {
+  const [y, m, d] = startIso.split('-').map(Number);
+  const target = new Date(y, m - 1 + months, 1);
+  const lastDay = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+  target.setDate(Math.min(d, lastDay));
+  target.setDate(target.getDate() - 1);
+  return isoDate(target);
+}
+
 /**
  * Abonnements des entreprises. Le paiement se fait hors de l'application (Wave, Orange Money…) :
- * l'administrateur enregistre ici la période payée.
+ * l'administrateur enregistre ici le forfait payé et sa date de début ; la fin et le montant en découlent.
  */
 @Component({
   selector: 'app-subscriptions',
@@ -48,6 +63,7 @@ function addDays(iso: string, days: number): string {
 })
 export class SubscriptionsComponent implements OnInit {
   private readonly subscriptionService = inject(SubscriptionService);
+  private readonly planService = inject(SubscriptionPlanService);
   private readonly notification = inject(NotificationService);
 
   protected readonly stateLabels = STATE_LABELS;
@@ -75,10 +91,38 @@ export class SubscriptionsComponent implements OnInit {
   protected readonly isSubmitting = signal(false);
   protected readonly formError = signal<string | null>(null);
   protected form: SubscriptionFormState = this.emptyForm();
+  /** Abonnement modifié sans forfait (essai, ancienne saisie) : dates saisies à la main. */
+  protected readonly editingWithoutPlan = signal(false);
+
+  /** Tous les forfaits (les désactivés restent utiles pour afficher et modifier l'historique). */
+  protected readonly plans = signal<SubscriptionPlan[]>([]);
 
   ngOnInit(): void {
     this.load();
+    this.planService.list().subscribe({ next: (res) => this.plans.set(res.payload) });
   }
+
+  /** Forfaits proposés dans le formulaire : actifs, plus celui de l'abonnement modifié. */
+  selectablePlans(): SubscriptionPlan[] {
+    const current = this.editingPlanId;
+    return this.plans().filter((plan) => plan.is_active || plan.id === current);
+  }
+
+  selectedPlan(): SubscriptionPlan | null {
+    return this.plans().find((plan) => plan.id === Number(this.form.subscription_plan_id)) ?? null;
+  }
+
+  /** Fin calculée pour l'aperçu du formulaire. */
+  computedEnd(): string | null {
+    const plan = this.selectedPlan();
+    return plan && this.form.starts_at ? planEnd(this.form.starts_at, plan.duration_months) : null;
+  }
+
+  durationLabel(months: number): string {
+    return months % 12 === 0 ? `${months / 12} an${months > 12 ? 's' : ''}` : `${months} mois`;
+  }
+
+  private editingPlanId: number | null = null;
 
   load(page = 1): void {
     this.isLoading.set(true);
@@ -134,14 +178,17 @@ export class SubscriptionsComponent implements OnInit {
   }
 
   openCreateForm(): void {
-    // Proposition : un mois à partir de la fin de la période en cours (ou d'aujourd'hui)
+    // Début proposé : lendemain de la période en cours (ou aujourd'hui)
     const status = this.selectedStatus();
     const today = isoDate(new Date());
     const start = status?.ends_at && status.ends_at >= today && status.state !== 'expired'
       ? addDays(status.ends_at, 1)
       : today;
 
-    this.form = { ...this.emptyForm(), starts_at: start, ends_at: addDays(start, 29) };
+    const firstPlan = this.plans().find((plan) => plan.is_active);
+    this.form = { ...this.emptyForm(), subscription_plan_id: firstPlan?.id ?? null, starts_at: start };
+    this.editingPlanId = null;
+    this.editingWithoutPlan.set(false);
     this.editingId.set(null);
     this.formError.set(null);
     this.isFormOpen.set(true);
@@ -149,12 +196,13 @@ export class SubscriptionsComponent implements OnInit {
 
   openEditForm(subscription: Subscription): void {
     this.form = {
-      plan: subscription.plan,
-      amount: subscription.amount,
+      subscription_plan_id: subscription.subscription_plan_id,
       starts_at: subscription.starts_at.slice(0, 10),
       ends_at: subscription.ends_at.slice(0, 10),
       notes: subscription.notes ?? ''
     };
+    this.editingPlanId = subscription.subscription_plan_id;
+    this.editingWithoutPlan.set(subscription.subscription_plan_id === null);
     this.editingId.set(subscription.id);
     this.formError.set(null);
     this.isFormOpen.set(true);
@@ -170,19 +218,21 @@ export class SubscriptionsComponent implements OnInit {
     if (!tenant || this.isSubmitting()) {
       return;
     }
-    if (!this.form.plan || this.form.amount === null || !this.form.starts_at || !this.form.ends_at) {
-      this.formError.set('Renseignez la formule, le montant et la période.');
+    const planId = this.form.subscription_plan_id ? Number(this.form.subscription_plan_id) : null;
+    if (!this.form.starts_at || (!planId && (!this.editingWithoutPlan() || !this.form.ends_at))) {
+      this.formError.set(this.editingWithoutPlan() ? 'Renseignez la période.' : 'Choisissez un forfait et la date de début.');
       return;
     }
 
     const payload: SubscriptionPayload = {
       tenant_id: tenant.tenant_id,
-      plan: this.form.plan,
-      amount: Number(this.form.amount),
+      subscription_plan_id: planId,
       starts_at: this.form.starts_at,
-      ends_at: this.form.ends_at,
       notes: this.form.notes || null
     };
+    if (!planId) {
+      payload.ends_at = this.form.ends_at;
+    }
 
     const editingId = this.editingId();
     const request = editingId
@@ -261,6 +311,6 @@ export class SubscriptionsComponent implements OnInit {
   }
 
   private emptyForm(): SubscriptionFormState {
-    return { plan: 'Mensuel', amount: null, starts_at: '', ends_at: '', notes: '' };
+    return { subscription_plan_id: null, starts_at: '', ends_at: '', notes: '' };
   }
 }

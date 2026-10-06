@@ -75,23 +75,23 @@
 .sub-badge {
   display: inline-flex;
   padding: 0.2rem 0.6rem;
-  border-radius: 999px;
+  border-radius: t.$radius-pill;
   font-size: 0.72rem;
   font-weight: 700;
 
   &--active {
-    background: rgba(22, 163, 74, 0.12);
+    background: rgba(t.$success, 0.12);
     color: t.$success;
   }
 
   &--expiring {
-    background: rgba(217, 119, 6, 0.12);
+    background: rgba(t.$warning, 0.12);
     color: t.$warning;
   }
 
   &--expired,
   &--none {
-    background: rgba(220, 38, 38, 0.08);
+    background: rgba(t.$danger, 0.08);
     color: t.$danger;
   }
 }
@@ -107,18 +107,18 @@
   font-size: 0.85rem;
 
   &--active {
-    background: rgba(22, 163, 74, 0.08);
+    background: rgba(t.$success, 0.08);
     color: t.$success;
   }
 
   &--expiring {
-    background: rgba(217, 119, 6, 0.08);
+    background: rgba(t.$warning, 0.08);
     color: t.$warning;
   }
 
   &--expired,
   &--none {
-    background: rgba(220, 38, 38, 0.06);
+    background: rgba(t.$danger, 0.06);
     color: t.$danger;
   }
 }
@@ -142,4 +142,12 @@
   td {
     padding: 0.7rem 0.6rem;
   }
+}
+
+// Fin et montant calculés à partir du forfait
+.field__input--readonly {
+  display: flex;
+  align-items: center;
+  background: t.$page-bg;
+  cursor: default;
 }

@@ -1,4 +1,11 @@
-// Design tokens — basés sur les maquettes LuminaSaaS
+// Design tokens — identité visuelle SN Devis
+// Palette officielle : Vert SN #00853F · Jaune SN #FDEF42 · Anthracite #17202A · Blanc #FFFFFF
+//
+// Règles d'usage du jaune ($highlight) :
+// - jamais comme couleur de texte sur fond blanc (contraste insuffisant) ;
+// - tout texte posé sur du jaune utilise $highlight-text (anthracite) ;
+// - réservé aux accents : badge « nouveau », CTA secondaire, indicateur actif, chiffre clé.
+// Le vert ($accent) reste la couleur des actions principales : boutons, liens, focus, éléments actifs.
 
 // Layout
 $sidebar-width: 260px;
@@ -6,32 +13,79 @@ $sidebar-width-collapsed: 76px;
 $navbar-height: 64px;
 
 // Sidebar (dark)
-$sidebar-bg: #1a1f35;
-$sidebar-border: rgba(255, 255, 255, 0.06);
+$sidebar-bg: #17202A;
+$sidebar-border: rgba(255, 255, 255, 0.08);
 $sidebar-hover: rgba(255, 255, 255, 0.06);
-$sidebar-text-muted: #9297b3;
+$sidebar-text-muted: #8A949E;
 
 // Accent
-$accent: #5b4fe5;
-$accent-hover: #4c3fe0;
+$accent: #00853F;
+$accent-hover: #006B33;
+$accent-rgb: 0, 133, 63; // composantes RGB, pour rgba(var(--sn-accent-rgb), X) en CSS pur
+// En SCSS, utiliser rgba(t.$accent, X) : Dart Sass n'accepte pas une liste dans rgba().
+$accent-soft: #E6F3EC; // fond vert très clair
+
+// Jaune SN (accents uniquement)
+$highlight: #FDEF42;
+$highlight-text: #17202A; // texte posé sur du jaune
 
 // Surfaces
-$page-bg: #f5f6fa;
-$card-bg: #ffffff;
-$border-color: #e8e9f0;
+$page-bg: #F5F7F6;
+$card-bg: #FFFFFF;
+$border-color: #E4E9ED;
 
 // Text
-$text-primary: #1a1f35;
-$text-secondary: #6b7086;
-$text-muted: #9297b3;
+$text-primary: #17202A;
+$text-secondary: #5B6670;
+$text-muted: #8A949E;
+$text-inverse: #FFFFFF; // texte posé sur un fond coloré (vert, anthracite, danger)
 
 // Status
-$success: #16a34a;
-$danger: #dc2626;
-$warning: #d97706;
+$success: #16A34A;
+$danger: #DC2626;
+$danger-hover: #B91C1C;
+$warning: #D97706;
+
+// Focus
+$focus-ring: 0 0 0 3px rgba(0, 133, 63, 0.25);
 
 // Radius / shadow
+$radius-sm: 8px;
 $radius-md: 10px;
 $radius-lg: 14px;
+$radius-pill: 999px;
 $shadow-sm: 0 1px 2px rgba(16, 19, 35, 0.04);
 $shadow-md: 0 4px 16px rgba(16, 19, 35, 0.06);
+$shadow-drawer: 8px 0 24px rgba(0, 0, 0, 0.25); // sidebar en mode mobile
+
+// Typographie
+$font-heading: 'Poppins', 'Segoe UI', Arial, sans-serif;
+$font-body: 'Inter', 'Segoe UI', Arial, sans-serif;
+
+// Variables CSS exposées dans :root (cf. styles.scss) pour les fichiers .ts
+$css-vars: (
+  'accent': $accent,
+  'accent-hover': $accent-hover,
+  'accent-rgb': $accent-rgb,
+  'accent-soft': $accent-soft,
+  'highlight': $highlight,
+  'highlight-text': $highlight-text,
+  'page-bg': $page-bg,
+  'card-bg': $card-bg,
+  'border-color': $border-color,
+  'text-primary': $text-primary,
+  'text-secondary': $text-secondary,
+  'text-muted': $text-muted,
+  'text-inverse': $text-inverse,
+  'success': $success,
+  'danger': $danger,
+  'danger-hover': $danger-hover,
+  'warning': $warning,
+  'focus-ring': $focus-ring,
+  'radius-sm': $radius-sm,
+  'radius-md': $radius-md,
+  'radius-lg': $radius-lg,
+  'radius-pill': $radius-pill,
+  'font-heading': $font-heading,
+  'font-body': $font-body
+);

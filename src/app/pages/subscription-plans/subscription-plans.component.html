@@ -1,0 +1,156 @@
+<div class="page-header card">
+  <span class="page-header__icon"><i class="bi bi-tags-fill"></i></span>
+  <div>
+    <h2 class="page-header__title">Forfaits</h2>
+    <p class="page-header__desc">
+      Types d'abonnement proposés aux entreprises. Le prix et la durée ne se modifient pas :
+      pour changer un tarif, désactivez le forfait et créez-en un nouveau.
+    </p>
+  </div>
+</div>
+
+<div class="card toolbar-card">
+  <div class="table-card__toolbar">
+    <span class="text-muted">{{ plans().length }} forfait(s)</span>
+    <button type="button" class="btn btn--primary" (click)="openCreateForm()">
+      <i class="bi bi-plus-lg"></i> Nouveau forfait
+    </button>
+  </div>
+</div>
+
+<div class="alert alert--error" *ngIf="errorMessage()">{{ errorMessage() }}</div>
+
+<div class="state-message text-center text-muted" *ngIf="isLoading()">Chargement...</div>
+<div class="state-message text-center text-muted" *ngIf="!isLoading() && plans().length === 0">
+  Aucun forfait. Créez-en un pour pouvoir enregistrer des abonnements.
+</div>
+
+<div class="card table-card" *ngIf="!isLoading() && plans().length > 0">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Forfait</th>
+        <th>Durée</th>
+        <th>Prix</th>
+        <th>Abonnements</th>
+        <th>État</th>
+        <th class="text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let plan of plans()" [class.row--inactive]="!plan.is_active">
+        <td>
+          {{ plan.name }}
+          <small class="text-muted d-block" *ngIf="plan.description">{{ plan.description }}</small>
+        </td>
+        <td>{{ durationLabel(plan.duration_months) }}</td>
+        <td>
+          {{ formatAmount(plan.price, plan.currency) }}
+          <small class="text-muted d-block">{{ monthlyLabel(plan) }}</small>
+        </td>
+        <td>{{ plan.subscriptions_count ?? 0 }}</td>
+        <td>
+          <span class="badge" [class.badge--success]="plan.is_active" [class.badge--muted]="!plan.is_active">
+            {{ plan.is_active ? 'Proposé' : 'Désactivé' }}
+          </span>
+        </td>
+        <td class="text-right">
+          <div class="table-actions">
+            <button type="button" class="icon-btn" title="Modifier" (click)="openEditForm(plan)">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button
+              type="button"
+              class="icon-btn"
+              [title]="plan.is_active ? 'Désactiver' : 'Réactiver'"
+              (click)="toggleActive(plan)"
+            >
+              <i class="bi" [class.bi-toggle-on]="plan.is_active" [class.bi-toggle-off]="!plan.is_active"></i>
+            </button>
+            <button
+              type="button"
+              class="icon-btn icon-btn--danger"
+              [title]="plan.subscriptions_count ? 'Déjà utilisé : désactivez-le' : 'Supprimer'"
+              [disabled]="!!plan.subscriptions_count"
+              (click)="askDelete(plan)"
+            >
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="modal-backdrop" *ngIf="isFormOpen()" (click)="closeForm()"></div>
+<div class="modal" *ngIf="isFormOpen()">
+  <div class="modal__header">
+    <h3>{{ editing() ? 'Modifier le forfait' : 'Nouveau forfait' }}</h3>
+    <button type="button" class="icon-btn" (click)="closeForm()"><i class="bi bi-x-lg"></i></button>
+  </div>
+
+  <form (ngSubmit)="submitForm()">
+    <div class="alert alert--error" *ngIf="formError()">{{ formError() }}</div>
+
+    <div class="form-grid">
+      <div class="field field--full">
+        <label class="field__label" for="name">Nom *</label>
+        <input id="name" type="text" class="field__input" placeholder="Forfait 3 mois" [(ngModel)]="form.name" name="name" required />
+      </div>
+      <div class="field">
+        <label class="field__label" for="duration_months">Durée (mois) *</label>
+        <input
+          id="duration_months"
+          type="number"
+          min="1"
+          max="60"
+          class="field__input"
+          [(ngModel)]="form.duration_months"
+          name="duration_months"
+          [disabled]="!!editing()"
+          required
+        />
+      </div>
+      <div class="field">
+        <label class="field__label" for="price">Prix (FCFA) *</label>
+        <input
+          id="price"
+          type="number"
+          min="0"
+          class="field__input"
+          [(ngModel)]="form.price"
+          name="price"
+          [disabled]="!!editing()"
+          required
+        />
+      </div>
+      <p class="field--full text-muted locked-hint" *ngIf="editing()">
+        <i class="bi bi-lock-fill"></i>
+        Prix et durée figés. Pour un nouveau tarif, désactivez ce forfait et créez-en un autre.
+      </p>
+      <div class="field">
+        <label class="field__label" for="position">Ordre d'affichage</label>
+        <input id="position" type="number" min="0" class="field__input" [(ngModel)]="form.position" name="position" />
+      </div>
+      <div class="field field--full">
+        <label class="field__label" for="description">Description</label>
+        <input
+          id="description"
+          type="text"
+          class="field__input"
+          placeholder="Affichée aux gestionnaires dans l'application"
+          [(ngModel)]="form.description"
+          name="description"
+        />
+      </div>
+    </div>
+
+    <div class="modal__actions">
+      <button type="button" class="btn btn--ghost" (click)="closeForm()">Annuler</button>
+      <button type="submit" class="btn btn--primary" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Enregistrement...' : 'Enregistrer' }}
+      </button>
+    </div>
+  </form>
+</div>

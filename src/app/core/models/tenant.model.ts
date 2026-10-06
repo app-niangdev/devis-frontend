@@ -72,9 +72,9 @@ export interface TenantPayload {
 }
 
 export const DEFAULT_COLORS = {
-  primary_color: '#1D4ED8',
-  secondary_color: '#0F172A',
-  accent_color: '#F59E0B'
+  primary_color: '#00853F',
+  secondary_color: '#17202A',
+  accent_color: '#FDEF42'
 };
 
 export interface PaginatedMeta {

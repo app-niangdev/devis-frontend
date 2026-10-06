@@ -1,6 +1,6 @@
 <div class="auth-form">
-  <h2 class="auth-form__title">Se connecter</h2>
-  <p class="auth-form__desc">Espace administrateur de la plateforme. Les gestionnaires utilisent l’application mobile.</p>
+  <h2 class="auth-form__title">Connexion administrateur</h2>
+  <p class="auth-form__desc">Espace réservé à l’administration de SN Devis.</p>
 
   <div class="alert alert--error" *ngIf="errorMessage()">{{ errorMessage() }}</div>
 
@@ -12,7 +12,7 @@
         type="email"
         name="email"
         class="field__input"
-        placeholder="vous@entreprise.com"
+        placeholder="admin@exemple.com"
         [(ngModel)]="email"
         autocomplete="email"
         required
@@ -55,15 +55,8 @@
       {{ isSubmitting() ? 'Connexion...' : 'Se connecter' }}
     </button>
 
-    <div class="divider"><span>ou</span></div>
-
-    <button type="button" class="btn-secondary">
-      <i class="bi bi-google"></i>
-      Continuer avec Google
-    </button>
-
     <p class="auth-form__footer">
-      Pas encore de compte ? <a href="#">Créer un compte</a>
+      Vous gérez une entreprise ? Connectez-vous depuis l’application mobile <strong>SN Devis</strong>.
     </p>
   </form>
 </div>

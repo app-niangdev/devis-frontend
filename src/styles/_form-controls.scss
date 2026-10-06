@@ -25,7 +25,7 @@
   &:focus {
     outline: none;
     border-color: t.$accent;
-    box-shadow: 0 0 0 3px rgba(91, 79, 229, 0.15);
+    box-shadow: 0 0 0 3px rgba(t.$accent, 0.15);
   }
 }
 
@@ -39,7 +39,7 @@
   border: none;
   border-radius: t.$radius-md;
   background: t.$accent;
-  color: #fff;
+  color: t.$text-inverse;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;

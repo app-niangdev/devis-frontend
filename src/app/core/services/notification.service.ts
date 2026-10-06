@@ -19,23 +19,24 @@ export interface PromptOptions extends ConfirmOptions {
 
 /**
  * Service de notification basé sur SweetAlert2,
- * configuré aux couleurs et au design de LuminaSaaS.
+ * configuré aux couleurs et au design de SN Devis.
  */
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private readonly brandPrimary = '#5b4fe5';
-  private readonly brandAccent = '#d97706';
-  private readonly brandDanger = '#dc2626';
-  private readonly brandSuccess = '#16a34a';
+  // Variables CSS définies dans styles.scss à partir de styles/tokens.scss
+  private readonly brandPrimary = 'var(--sn-accent)';
+  private readonly brandAccent = 'var(--sn-warning)';
+  private readonly brandDanger = 'var(--sn-danger)';
+  private readonly brandSuccess = 'var(--sn-success)';
 
   private readonly baseClass = {
-    popup: 'lumina-swal',
-    title: 'lumina-swal__title',
-    htmlContainer: 'lumina-swal__html',
-    confirmButton: 'lumina-swal__btn lumina-swal__btn--primary',
-    cancelButton: 'lumina-swal__btn lumina-swal__btn--ghost',
-    icon: 'lumina-swal__icon',
-    actions: 'lumina-swal__actions'
+    popup: 'sn-swal',
+    title: 'sn-swal__title',
+    htmlContainer: 'sn-swal__html',
+    confirmButton: 'sn-swal__btn sn-swal__btn--primary',
+    cancelButton: 'sn-swal__btn sn-swal__btn--ghost',
+    icon: 'sn-swal__icon',
+    actions: 'sn-swal__actions'
   } as const;
 
   success(title: string, text?: string): Promise<SweetAlertResult> {
@@ -125,8 +126,8 @@ export class NotificationService {
       customClass: {
         ...this.baseClass,
         confirmButton: isDanger
-          ? 'lumina-swal__btn lumina-swal__btn--danger'
-          : 'lumina-swal__btn lumina-swal__btn--primary'
+          ? 'sn-swal__btn sn-swal__btn--danger'
+          : 'sn-swal__btn sn-swal__btn--primary'
       },
       buttonsStyling: false
     });
@@ -156,8 +157,8 @@ export class NotificationService {
       customClass: {
         ...this.baseClass,
         confirmButton: isDanger
-          ? 'lumina-swal__btn lumina-swal__btn--danger'
-          : 'lumina-swal__btn lumina-swal__btn--primary'
+          ? 'sn-swal__btn sn-swal__btn--danger'
+          : 'sn-swal__btn sn-swal__btn--primary'
       },
       buttonsStyling: false
     });
@@ -176,7 +177,7 @@ export class NotificationService {
       timer: 2800,
       timerProgressBar: true,
       customClass: {
-        popup: 'lumina-swal__toast'
+        popup: 'sn-swal__toast'
       }
     });
   }

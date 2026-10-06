@@ -15,10 +15,10 @@
   min-width: 380px;
   padding: 2.5rem;
   background:
-    radial-gradient(circle at 15% 10%, rgba(91, 79, 229, 0.25), transparent 55%),
-    radial-gradient(circle at 85% 90%, rgba(91, 79, 229, 0.18), transparent 50%),
+    radial-gradient(circle at 15% 10%, rgba(t.$accent, 0.25), transparent 55%),
+    radial-gradient(circle at 85% 90%, rgba(t.$accent, 0.18), transparent 50%),
     t.$sidebar-bg;
-  color: #fff;
+  color: t.$text-inverse;
   overflow: hidden;
 }
 
@@ -29,21 +29,12 @@
 }
 
 .auth__brand-logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: t.$accent;
-  color: #fff;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.auth__brand-name {
-  font-weight: 700;
-  font-size: 1.1rem;
+  display: block;
+  height: 40px;
+  width: auto;
+  padding: 0.4rem 0.75rem;
+  border-radius: t.$radius-sm;
+  background: t.$card-bg;
 }
 
 .auth__pitch-title {
@@ -58,7 +49,7 @@
   max-width: 30rem;
   font-size: 0.95rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(t.$text-inverse, 0.65);
 }
 
 .auth__highlights {
@@ -69,7 +60,7 @@
   padding: 0;
   list-style: none;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(t.$text-inverse, 0.85);
 }
 
 .auth__highlights li {
@@ -89,7 +80,7 @@
 .auth__copyright {
   margin: 0;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(t.$text-inverse, 0.4);
 }
 
 .auth__panel {
