@@ -2,8 +2,8 @@ import { SubscriptionStatus } from './auth.model';
 
 export type DepositType = 'none' | 'percent' | 'amount';
 
-/** Inscription faite depuis l'application : en attente de validation, validée ou refusée. */
-export type ApprovalStatus = 'approved' | 'pending' | 'rejected';
+/** Inscription faite depuis l'application : « pending » tant que le numéro n'est pas confirmé. */
+export type ApprovalStatus = 'approved' | 'pending';
 
 export interface TenantManager {
   id: number;
@@ -47,9 +47,7 @@ export interface Tenant {
   short_name: string | null;
   state: boolean;
   approval_status: ApprovalStatus;
-  approval_reviewed_at: string | null;
-  rejection_reason: string | null;
-  /** Date de création (date de la demande pour une inscription depuis l'application) */
+  /** Date de création (date d'inscription pour une entreprise inscrite depuis l'application) */
   registered_at?: string | null;
   managers?: TenantManager[];
   subscription?: SubscriptionStatus;

@@ -2,11 +2,10 @@ import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
 import { TenantService } from '../../core/services/tenant.service';
 import { UserService } from '../../core/services/user.service';
 import { NotificationService } from '../../core/services/notification.service';
-import { ApprovalStatus, DEFAULT_COLORS, DepositType, Tenant, TenantPayload } from '../../core/models/tenant.model';
+import { DEFAULT_COLORS, DepositType, Tenant, TenantPayload } from '../../core/models/tenant.model';
 import { UserListItem } from '../../core/models/user.model';
 import { SubscriptionState } from '../../core/models/auth.model';
 
@@ -75,7 +74,6 @@ export class TenantsComponent implements OnInit, OnDestroy {
   private readonly tenantService = inject(TenantService);
   private readonly userService = inject(UserService);
   private readonly notification = inject(NotificationService);
-  private readonly route = inject(ActivatedRoute);
 
   protected readonly tenants = signal<Tenant[]>([]);
   protected readonly availableManagers = signal<UserListItem[]>([]);
@@ -87,10 +85,6 @@ export class TenantsComponent implements OnInit, OnDestroy {
   protected readonly lastPage = signal(1);
   protected readonly total = signal(0);
   protected search = '';
-
-  /** Filtre : toutes les entreprises, inscriptions à valider ou refusées. */
-  protected readonly approvalFilter = signal<ApprovalStatus | null>(null);
-  protected readonly pendingCount = signal(0);
 
   protected readonly isFormOpen = signal(false);
   protected readonly editingTenantId = signal<number | null>(null);
@@ -104,13 +98,7 @@ export class TenantsComponent implements OnInit, OnDestroy {
   private objectUrl: string | null = null;
 
   ngOnInit(): void {
-    // Lien « Inscriptions à valider » du tableau de bord
-    const approval = this.route.snapshot.queryParamMap.get('approval');
-    if (approval === 'pending' || approval === 'rejected') {
-      this.approvalFilter.set(approval);
-    }
     this.loadTenants();
-    this.loadPendingCount();
     this.loadAvailableManagers();
   }
 
@@ -118,7 +106,7 @@ export class TenantsComponent implements OnInit, OnDestroy {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.tenantService.list(PER_PAGE, this.search, page, this.approvalFilter()).subscribe({
+    this.tenantService.list(PER_PAGE, this.search, page).subscribe({
       next: (res) => {
         this.tenants.set(res.payload);
         this.currentPage.set(res.meta.current_page);
@@ -133,74 +121,9 @@ export class TenantsComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadPendingCount(): void {
-    this.tenantService.list(1, '', 1, 'pending').subscribe({
-      next: (res) => this.pendingCount.set(res.meta.total),
-      error: () => this.pendingCount.set(0)
-    });
-  }
-
-  setApprovalFilter(status: ApprovalStatus | null): void {
-    this.approvalFilter.set(status);
-    this.loadTenants(1);
-  }
-
-  /** Numéro du gestionnaire confirmé par le code WhatsApp (condition pour activer). */
+  /** Numéro du gestionnaire confirmé par le code WhatsApp (inscription terminée). */
   isPhoneVerified(tenant: Tenant): boolean {
     return tenant.managers?.[0]?.phone_verified ?? false;
-  }
-
-  async approve(tenant: Tenant): Promise<void> {
-    const manager = tenant.managers?.[0];
-    const confirmed = await this.notification.confirm({
-      title: 'Activer ce compte ?',
-      text: `« ${tenant.name} »${manager ? ` (${manager.full_name}, ${manager.phone_one})` : ''} pourra se connecter `
-        + "et sa période d'essai démarrera aujourd'hui. L'artisan sera prévenu sur WhatsApp.",
-      confirmText: 'Activer',
-      cancelText: 'Annuler'
-    });
-
-    if (!confirmed) {
-      return;
-    }
-
-    this.tenantService.approve(tenant.id).subscribe({
-      next: (res) => {
-        this.notification.toast(res.message, 'success');
-        this.loadTenants(this.currentPage());
-        this.loadPendingCount();
-      },
-      error: (err: HttpErrorResponse) => {
-        this.notification.toast(err.error?.message ?? 'Une erreur est survenue.', 'error');
-      }
-    });
-  }
-
-  async reject(tenant: Tenant): Promise<void> {
-    const reason = await this.notification.prompt({
-      title: 'Refuser cette inscription ?',
-      text: `Le motif sera envoyé sur WhatsApp à l'artisan de « ${tenant.name} ».`,
-      placeholder: 'Ex. Informations incomplètes, merci de nous contacter.',
-      requiredMessage: 'Indiquez le motif du refus.',
-      confirmText: 'Refuser',
-      cancelText: 'Annuler',
-      danger: true
-    });
-
-    if (reason === null) {
-      return;
-    }
-
-    this.tenantService.reject(tenant.id, reason).subscribe({
-      next: (res) => {
-        this.notification.toast(res.message, 'success');
-        this.loadTenants(this.currentPage());
-        this.loadPendingCount();
-      },
-      error: (err: HttpErrorResponse) => {
-        this.notification.toast(err.error?.message ?? 'Une erreur est survenue.', 'error');
-      }
-    });
   }
 
   loadAvailableManagers(): void {
@@ -409,7 +332,6 @@ export class TenantsComponent implements OnInit, OnDestroy {
       next: () => {
         this.notification.toast('Entreprise supprimée définitivement.', 'success');
         this.loadTenants(this.currentPage());
-        this.loadPendingCount();
         this.loadAvailableManagers();
       },
       error: (err: HttpErrorResponse) => {

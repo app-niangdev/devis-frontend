@@ -37,15 +37,6 @@ export class TenantService {
     return this.http.put<ApiItemResponse<Tenant>>(`${this.apiUrl}/toggle-status/${id}`, {});
   }
 
-  /** Inscription depuis l'application : active le compte (période d'essai offerte). */
-  approve(id: number): Observable<ApiItemResponse<Tenant>> {
-    return this.http.put<ApiItemResponse<Tenant>>(`${this.apiUrl}/approve/${id}`, {});
-  }
-
-  reject(id: number, reason: string): Observable<ApiItemResponse<Tenant>> {
-    return this.http.put<ApiItemResponse<Tenant>>(`${this.apiUrl}/reject/${id}`, { reason });
-  }
-
   forceDelete(id: number): Observable<ApiItemResponse<null>> {
     return this.http.delete<ApiItemResponse<null>>(`${this.apiUrl}/destroy/${id}/force`);
   }

@@ -25,8 +25,6 @@ export interface TenantStats {
 export interface AdminDashboard {
   tenants: { total: number; active: number };
   managers: number;
-  /** Inscriptions depuis l'application à valider (numéro confirmé) */
-  pending_signups: number;
   subscriptions: Record<SubscriptionState, number>;
   revenue_month: number;
   quotes_month: number;

@@ -11,16 +11,6 @@
 
 <div class="alert alert--error" *ngIf="errorMessage()">{{ errorMessage() }}</div>
 
-<!-- Inscriptions faites depuis l'application, en attente de l'administrateur -->
-<a class="card signup-alert" *ngIf="data()?.pending_signups" routerLink="/tenants" [queryParams]="{ approval: 'pending' }">
-  <span class="signup-alert__icon"><i class="bi bi-person-plus-fill"></i></span>
-  <span class="signup-alert__text">
-    <strong>{{ data()!.pending_signups }} inscription{{ data()!.pending_signups > 1 ? 's' : '' }} à valider</strong>
-    <small>Des artisans attendent l'activation de leur compte d'essai.</small>
-  </span>
-  <i class="bi bi-chevron-right signup-alert__chevron"></i>
-</a>
-
 <div class="kpi-grid">
   <div class="card kpi" *ngFor="let kpi of kpis()">
     <p class="kpi__label">{{ kpi.label }}</p>

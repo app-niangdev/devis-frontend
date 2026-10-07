@@ -23,22 +23,11 @@
       <i class="bi bi-plus-lg"></i> Ajouter une entreprise
     </button>
   </div>
-  <div class="approval-tabs" role="tablist" aria-label="Filtrer les entreprises">
-    <button type="button" role="tab" class="approval-tab" [class.approval-tab--active]="approvalFilter() === null"
-      [attr.aria-selected]="approvalFilter() === null" (click)="setApprovalFilter(null)">Toutes</button>
-    <button type="button" role="tab" class="approval-tab" [class.approval-tab--active]="approvalFilter() === 'pending'"
-      [attr.aria-selected]="approvalFilter() === 'pending'" (click)="setApprovalFilter('pending')">
-      Inscriptions à valider
-      <span class="approval-tab__count" *ngIf="pendingCount() > 0">{{ pendingCount() }}</span>
-    </button>
-    <button type="button" role="tab" class="approval-tab" [class.approval-tab--active]="approvalFilter() === 'rejected'"
-      [attr.aria-selected]="approvalFilter() === 'rejected'" (click)="setApprovalFilter('rejected')">Refusées</button>
-  </div>
 </div>
 
 <div class="state-message text-center text-muted" *ngIf="isLoading()">Chargement...</div>
 <div class="state-message text-center text-muted" *ngIf="!isLoading() && tenants().length === 0">
-  {{ approvalFilter() === 'pending' ? 'Aucune inscription à valider.' : 'Aucune entreprise trouvée.' }}
+  Aucune entreprise trouvée.
 </div>
 
 <div class="tenant-grid" *ngIf="!isLoading() && tenants().length > 0">
@@ -48,8 +37,9 @@
         <img *ngIf="tenant.logo_url" [src]="tenant.logo_url" [alt]="tenant.name" />
         <span *ngIf="!tenant.logo_url" class="tenant-card__initial">{{ tenant.name.charAt(0) }}</span>
       </div>
-      <span class="badge badge--warning" *ngIf="tenant.approval_status === 'pending'">À valider</span>
-      <span class="badge badge--danger" *ngIf="tenant.approval_status === 'rejected'">Refusée</span>
+      <span class="badge badge--warning" *ngIf="tenant.approval_status === 'pending'" title="L'artisan n'a pas encore saisi le code reçu sur WhatsApp">
+        Inscription inachevée
+      </span>
       <span class="badge" *ngIf="tenant.approval_status === 'approved'" [class.badge--success]="tenant.state" [class.badge--muted]="!tenant.state">
         {{ tenant.state ? 'Active' : 'Désactivée' }}
       </span>
@@ -81,12 +71,8 @@
           </dd>
         </div>
         <div class="tenant-card__meta-row" *ngIf="tenant.registered_at">
-          <dt><i class="bi bi-clock-history"></i> Demande</dt>
+          <dt><i class="bi bi-clock-history"></i> Inscription</dt>
           <dd>{{ tenant.registered_at | date: 'dd/MM/yyyy HH:mm' }}</dd>
-        </div>
-        <div class="tenant-card__meta-row" *ngIf="tenant.rejection_reason">
-          <dt><i class="bi bi-chat-left-text"></i> Motif</dt>
-          <dd>{{ tenant.rejection_reason }}</dd>
         </div>
       </ng-container>
       <div class="tenant-card__meta-row" *ngIf="tenant.approval_status === 'approved' && tenant.subscription as sub">
@@ -97,17 +83,6 @@
         </dd>
       </div>
     </dl>
-
-    <div class="review-actions" *ngIf="tenant.approval_status === 'pending'">
-      <button type="button" class="btn btn--primary" [disabled]="!isPhoneVerified(tenant)"
-        [title]="isPhoneVerified(tenant) ? 'Activer le compte' : 'Le numéro doit d\'abord être confirmé par code WhatsApp'"
-        (click)="approve(tenant)">
-        <i class="bi bi-check-lg"></i> Activer
-      </button>
-      <button type="button" class="btn btn--ghost review-actions__reject" (click)="reject(tenant)">
-        <i class="bi bi-x-lg"></i> Refuser
-      </button>
-    </div>
 
     <div class="tenant-card__actions">
       <button type="button" class="icon-btn" title="Modifier" (click)="openEditForm(tenant)">
