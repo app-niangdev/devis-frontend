@@ -2,6 +2,9 @@ import { SubscriptionStatus } from './auth.model';
 
 export type DepositType = 'none' | 'percent' | 'amount';
 
+/** Inscription faite depuis l'application : en attente de validation, validée ou refusée. */
+export type ApprovalStatus = 'approved' | 'pending' | 'rejected';
+
 export interface TenantManager {
   id: number;
   first_name: string;
@@ -10,6 +13,8 @@ export interface TenantManager {
   phone_one: string;
   email: string | null;
   status: boolean;
+  /** Numéro confirmé par le code WhatsApp */
+  phone_verified?: boolean;
 }
 
 /** Entreprise (artisan / ouvrier) cliente de la plateforme. */
@@ -41,6 +46,11 @@ export interface Tenant {
   quote_footer: string | null;
   short_name: string | null;
   state: boolean;
+  approval_status: ApprovalStatus;
+  approval_reviewed_at: string | null;
+  rejection_reason: string | null;
+  /** Date de création (date de la demande pour une inscription depuis l'application) */
+  registered_at?: string | null;
   managers?: TenantManager[];
   subscription?: SubscriptionStatus;
 }

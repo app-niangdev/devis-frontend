@@ -2,15 +2,18 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ApiItemResponse, PaginatedResponse, Tenant, TenantPayload } from '../models/tenant.model';
+import { ApiItemResponse, ApprovalStatus, PaginatedResponse, Tenant, TenantPayload } from '../models/tenant.model';
 
 @Injectable({ providedIn: 'root' })
 export class TenantService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/tenants`;
 
-  list(perPage: number, search: string, page = 1): Observable<PaginatedResponse<Tenant>> {
-    const params = new HttpParams().set('per_page', perPage).set('search', search).set('page', page);
+  list(perPage: number, search: string, page = 1, approvalStatus: ApprovalStatus | null = null): Observable<PaginatedResponse<Tenant>> {
+    let params = new HttpParams().set('per_page', perPage).set('search', search).set('page', page);
+    if (approvalStatus) {
+      params = params.set('approval_status', approvalStatus);
+    }
 
     return this.http.get<PaginatedResponse<Tenant>>(`${this.apiUrl}/list`, { params });
   }
@@ -32,6 +35,15 @@ export class TenantService {
 
   toggleStatus(id: number): Observable<ApiItemResponse<Tenant>> {
     return this.http.put<ApiItemResponse<Tenant>>(`${this.apiUrl}/toggle-status/${id}`, {});
+  }
+
+  /** Inscription depuis l'application : active le compte (période d'essai offerte). */
+  approve(id: number): Observable<ApiItemResponse<Tenant>> {
+    return this.http.put<ApiItemResponse<Tenant>>(`${this.apiUrl}/approve/${id}`, {});
+  }
+
+  reject(id: number, reason: string): Observable<ApiItemResponse<Tenant>> {
+    return this.http.put<ApiItemResponse<Tenant>>(`${this.apiUrl}/reject/${id}`, { reason });
   }
 
   forceDelete(id: number): Observable<ApiItemResponse<null>> {

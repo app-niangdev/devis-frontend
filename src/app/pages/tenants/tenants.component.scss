@@ -254,6 +254,76 @@
     background: rgba(t.$text-muted, 0.15);
     color: t.$text-muted;
   }
+
+  &--warning {
+    background: rgba(t.$warning, 0.14);
+    color: t.$warning;
+  }
+
+  &--danger {
+    background: rgba(t.$danger, 0.1);
+    color: t.$danger;
+  }
+}
+
+// Filtre : toutes / inscriptions à valider / refusées
+.approval-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+}
+
+.approval-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.875rem;
+  border: 1px solid t.$border-color;
+  border-radius: t.$radius-pill;
+  background: t.$card-bg;
+  color: t.$text-secondary;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    color: t.$text-primary;
+  }
+
+  &--active {
+    border-color: t.$accent;
+    background: t.$accent-soft;
+    color: t.$accent-hover;
+  }
+
+  &__count {
+    min-width: 1.25rem;
+    padding: 0 0.35rem;
+    border-radius: t.$radius-pill;
+    background: t.$highlight;
+    color: t.$highlight-text;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-align: center;
+  }
+}
+
+// Inscription depuis l'application : décision de l'administrateur
+.review-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+
+  .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  &__reject:hover:not(:disabled) {
+    color: t.$danger;
+    border-color: rgba(t.$danger, 0.3);
+  }
 }
 
 .icon-btn {

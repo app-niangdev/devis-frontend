@@ -190,6 +190,50 @@
   }
 }
 
+.signup-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-bottom: 1rem;
+  padding: 0.875rem 1.1rem;
+  border: 1px solid rgba(t.$accent, 0.35);
+  background: t.$accent-soft;
+  color: t.$text-primary;
+  text-decoration: none;
+
+  &:hover {
+    border-color: t.$accent;
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: t.$radius-md;
+    background: t.$highlight;
+    color: t.$highlight-text;
+    font-size: 1.15rem;
+  }
+
+  &__text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.1rem;
+
+    small {
+      color: t.$text-secondary;
+    }
+  }
+
+  &__chevron {
+    color: t.$accent;
+  }
+}
+
 .alert--error {
   margin-bottom: 1rem;
   padding: 0.75rem 1rem;
